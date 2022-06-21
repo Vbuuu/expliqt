@@ -1,27 +1,37 @@
-local w, h = term.getSize()
+term.clear()
+term.setCursorPos(1,1)
+term.setTextColor(colors.white)
 
-term.setCursorPos(h/2,w/2)
-print("Expliqt Installer v0.1")
+print("Welcome to the installer!")
 print("Press Enter to continue...")
 read("")
+
 
 term.clear()
 term.setCursorPos(1,1)
 
-local versions = http.get("https://raw.githubusercontent.com/Vbuuu/Expliqt/misc/versions.lua").readAll()
-local choices = loadstring(versions)()
+print("Fetching versions...")
+
+local handle = http.get("http://raw.githubusercontent.com/Vbuuu/Expliqt/misc/versions.lua")
+local data = handle.readAll()
+
+print("Loading versions...")
+
+local choices = loadstring(data)()
 local max = #choices
+
 local selection = 1
-local selecting = true
-local url = getURL(selection)
+
+local w, h = term.getSize()
 
 local function draw()
     term.clear()
-    for i,v in ipairs(choices) do
+    for i,v in pairs(choices) do
         if i == selection then
+            term.setTextColor(colors.cyan)
             term.setCursorPos(math.floor((w-#v.name)/2 - 1), (i - selection) + math.floor(h/2))
             term.write("["..v.name.."]")
-            term.setTextColor(colors.green)
+            term.setTextColor(colors.white)
         else
             term.setCursorPos(math.floor((w-#v.name)/2), (i - selection) + math.floor(h/2))
             term.write(v.name)
@@ -38,7 +48,9 @@ local function getURL(id)
     end
 end
 
-while selecting do
+local go = true
+
+while go do
     draw()
     local e, id = os.pullEvent("key")
     if id == keys.up then
@@ -59,14 +71,21 @@ end
 term.clear()
 term.setCursorPos(1,1)
 
-print("Final Warning: are you sure, you wanna install Expliqt os? y/n")
+local url = getURL(selection)
+print("Are you sure you want to proceed? y/n")
+
 local r = read()
 
 if r == "y" then
     local func = loadstring(http.get(url).readAll())
     setfenv(func,_G)
     func("Expliqt")
-    print("Installation complete!")
+    print("Installing Expliqt.")
 else
-    print("Installation aborted! Stupid Idiot")
+    print("Bro ur stupid.")
+    return
 end
+
+print("Press ENTER to reboot")
+read()
+os.reboot()
