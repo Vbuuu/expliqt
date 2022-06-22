@@ -20,20 +20,25 @@ print("Loading versions...")
 local choices = loadstring(data)()
 local max = #choices
 
-local selection = 1
+local bSelection = 1
 
 local w, h = term.getSize()
 
-local function draw()
+local function drawInstallerMode()
+    term.clear()
+    term.setTextColor(colors.cyan)
+    term.setCursorPos(math.floor((2-#)))
+
+local function drawBranchSelect()
     term.clear()
     for i,v in pairs(choices) do
-        if i == selection then
+        if i == bSelection then
             term.setTextColor(colors.cyan)
-            term.setCursorPos(math.floor((w-#v.name)/2 - 1), (i - selection) + math.floor(h/2))
+            term.setCursorPos(math.floor((w-#v.name)/2 - 1), (i - bSelection) + math.floor(h/2))
             term.write("["..v.name.."]")
             term.setTextColor(colors.white)
         else
-            term.setCursorPos(math.floor((w-#v.name)/2), (i - selection) + math.floor(h/2))
+            term.setCursorPos(math.floor((w-#v.name)/2), (i - bSelection) + math.floor(h/2))
             term.write(v.name)
         end
     end
@@ -48,20 +53,20 @@ local function getURL(id)
     end
 end
 
-local go = true
+local branchSelecting = true
 
-while go do
-    draw()
+while branchSelecting do
+    drawBranchSelect()
     local e, id = os.pullEvent("key")
     if id == keys.up then
-        selection = selection - 1
-        if selection < 1 then
-            selection = 1
+        bSelection = bSelection - 1
+        if bSelection < 1 then
+            bSelection = 1
         end
     elseif id == keys.down then
-        selection = selection + 1
-        if selection > max then
-            selection = max
+        bSelection = bSelection + 1
+        if bSelection > max then
+            bSelection = max
         end
     elseif id == keys.enter then
         break
@@ -71,7 +76,7 @@ end
 term.clear()
 term.setCursorPos(1,1)
 
-local url = getURL(selection)
+local url = getURL(bSelection)
 print("Are you sure you want to proceed? y/n")
 
 local r = read()
