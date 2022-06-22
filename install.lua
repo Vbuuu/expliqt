@@ -82,7 +82,7 @@ print("Are you sure you want to proceed? y/n")
 local r = read()
 
 if r == "y" then
-    local func = loadstring(http.get(url.."/install.lua").readAll())
+    local func = loadstring(http.get(url.."install.lua").readAll())
     setfenv(func,_G)
     func("Expliqt")
     print("Installing Expliqt.")
